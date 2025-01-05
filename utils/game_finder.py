@@ -64,3 +64,27 @@ class GameFinder:
         if "games" in norm_root:
             return "Gamecube"
         return "Unknown"
+
+    @staticmethod
+    def get_region(game_path):
+        """
+        Reads the region from the header.
+        """
+        with open(game_path, "rb") as f:
+            f.seek(0x03)
+            region_code = f.read(1)
+            regions = {
+                b'\x00': "Japan",
+                b'\x01': "USA",
+                b'\x02': "Europe"
+            }
+            return regions.get(region_code, "Unknown")
+
+    @staticmethod
+    def get_version(game_path):
+        """
+        Reads the disc version from the header.
+        """
+        with open(game_path, "rb") as f:
+            f.seek(0x07)
+            return int.from_bytes(f.read(1), "big")

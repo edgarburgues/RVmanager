@@ -1,11 +1,59 @@
 import os
 import threading
-from tkinter import filedialog, messagebox
-from ttkbootstrap import Frame, Button, Treeview, Progressbar, Combobox, Label, Canvas, Text
+from tkinter import filedialog, messagebox, Toplevel
+from ttkbootstrap import Frame, Button, Treeview, Progressbar, Combobox, Label, Canvas
 from utils.config_manager import ConfigManager
 from utils.cover_manager import CoverManager
 from utils.game_finder import GameFinder
 from utils.usb_utils import USBUtils
+
+
+class ToolTip:
+    """
+    Shows a small pop-up window (tooltip) when you hover the mouse
+    over a widget.
+    """
+    def __init__(self, widget, text=""):
+        self.widget = widget
+        self.text = text
+        self.tipwindow = None
+        self.widget.bind("<Enter>", self._on_enter)
+        self.widget.bind("<Leave>", self._on_leave)
+
+    def _on_enter(self, event=None):
+        """
+        When the cursor enters the widget, we show the tooltip.
+        """
+        if not self.text:
+            return
+        x = self.widget.winfo_rootx() + 20
+        y = self.widget.winfo_rooty() + self.widget.winfo_height() + 10
+        self._show_tooltip(x, y)
+
+    def _on_leave(self, event=None):
+        """
+        When the cursor leaves the widget, we destroy the tooltip.
+        """
+        self._hide_tooltip()
+
+    def _show_tooltip(self, x, y):
+        """
+        Creates and displays the Toplevel window that acts as a tooltip.
+        """
+        self.tipwindow = tw = Toplevel(self.widget)
+        tw.wm_overrideredirect(1)
+        tw.geometry(f"+{x}+{y}")
+        label = Label(tw, text=self.text, background="#ffffe0", relief="solid", borderwidth=1)
+        label.pack(ipadx=1)
+
+    def _hide_tooltip(self):
+        """
+        Closes the tooltip window if it exists.
+        """
+        if self.tipwindow:
+            self.tipwindow.destroy()
+        self.tipwindow = None
+
 
 class RVLoaderApp:
     """
@@ -54,12 +102,34 @@ class RVLoaderApp:
         left_top_frame.grid(row=0, column=0, sticky="w")
         right_top_frame.grid(row=0, column=1, sticky="e")
 
-        Button(left_top_frame, text="Add Folder (Gamecube)", bootstyle="outline-primary", command=lambda: self.add_folder("Gamecube")).pack(side="left", padx=5)
-        Button(left_top_frame, text="Add Folder (Wii)", bootstyle="outline-primary", command=lambda: self.add_folder("Wii")).pack(side="left", padx=5)
-        Button(left_top_frame, text="Refresh Lists", bootstyle="outline-success", command=self.refresh_game_list).pack(side="left", padx=5)
+        Button(
+            left_top_frame,
+            text="Add Folder (Gamecube)",
+            bootstyle="outline-primary",
+            command=lambda: self.add_folder("Gamecube")
+        ).pack(side="left", padx=5)
+
+        Button(
+            left_top_frame,
+            text="Add Folder (Wii)",
+            bootstyle="outline-primary",
+            command=lambda: self.add_folder("Wii")
+        ).pack(side="left", padx=5)
+
+        Button(
+            left_top_frame,
+            text="Refresh Lists",
+            bootstyle="outline-success",
+            command=self.refresh_game_list
+        ).pack(side="left", padx=5)
 
         Label(right_top_frame, text="USB Drive:").pack(side="left", padx=5)
-        self.usb_drive_selector = Combobox(right_top_frame, values=USBUtils.get_available_drives(), state="readonly", width=25)
+        self.usb_drive_selector = Combobox(
+            right_top_frame,
+            values=USBUtils.get_available_drives(),
+            state="readonly",
+            width=25
+        )
         self.usb_drive_selector.pack(side="left", padx=5)
         self.usb_drive_selector.bind("<<ComboboxSelected>>", self.load_usb_games)
 
@@ -78,15 +148,35 @@ class RVLoaderApp:
         self.local_cover_canvas = Canvas(local_details_frame, width=160, height=224, bg="white")
         self.local_cover_canvas.pack()
 
-        self.local_details_text = Text(local_details_frame, width=35, height=10, state="disabled", wrap="word")
-        self.local_details_text.pack(pady=5)
+        self.local_name_label = Label(local_details_frame, width=40, anchor="w")
+        self.local_name_label.pack(anchor="w", pady=(10, 0))
+
+        self.local_id_label = Label(local_details_frame, width=40, anchor="w")
+        self.local_id_label.pack(anchor="w")
+
+        self.local_type_label = Label(local_details_frame, width=40, anchor="w")
+        self.local_type_label.pack(anchor="w")
+
+        self.local_region_label = Label(local_details_frame, width=40, anchor="w")
+        self.local_region_label.pack(anchor="w")
+
+        self.local_version_label = Label(local_details_frame, width=40, anchor="w")
+        self.local_version_label.pack(anchor="w")
+
+        self.local_path_label = Label(local_details_frame, width=40, anchor="w")
+        self.local_path_label.pack(anchor="w")
 
         local_list_frame = Frame(main_frame)
         local_list_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
 
         Label(local_list_frame, text="Local Games").pack(pady=5)
 
-        self.local_games_tree = Treeview(local_list_frame, columns=("ID", "Name", "Type"), show="headings", height=20)
+        self.local_games_tree = Treeview(
+            local_list_frame,
+            columns=("ID", "Name", "Type"),
+            show="headings",
+            height=20
+        )
         self.local_games_tree.heading("ID", text="ID")
         self.local_games_tree.heading("Name", text="Name")
         self.local_games_tree.heading("Type", text="Type")
@@ -110,7 +200,12 @@ class RVLoaderApp:
 
         Label(usb_list_frame, text="USB Games").pack(pady=5)
 
-        self.usb_games_tree = Treeview(usb_list_frame, columns=("ID", "Name", "Type"), show="headings", height=20)
+        self.usb_games_tree = Treeview(
+            usb_list_frame,
+            columns=("ID", "Name", "Type"),
+            show="headings",
+            height=20
+        )
         self.usb_games_tree.heading("ID", text="ID")
         self.usb_games_tree.heading("Name", text="Name")
         self.usb_games_tree.heading("Type", text="Type")
@@ -131,13 +226,33 @@ class RVLoaderApp:
         self.usb_cover_canvas = Canvas(details_container, width=160, height=224, bg="white")
         self.usb_cover_canvas.pack()
 
-        self.usb_details_text = Text(details_container, width=35, height=10, state="disabled", wrap="word")
-        self.usb_details_text.pack(pady=5)
+        self.usb_name_label = Label(details_container, width=40, anchor="w")
+        self.usb_name_label.pack(anchor="w", pady=(10, 0))
+
+        self.usb_id_label = Label(details_container, width=40, anchor="w")
+        self.usb_id_label.pack(anchor="w")
+
+        self.usb_type_label = Label(details_container, width=40, anchor="w")
+        self.usb_type_label.pack(anchor="w")
+
+        self.usb_region_label = Label(details_container, width=40, anchor="w")
+        self.usb_region_label.pack(anchor="w")
+
+        self.usb_version_label = Label(details_container, width=40, anchor="w")
+        self.usb_version_label.pack(anchor="w")
+
+        self.usb_path_label = Label(details_container, width=40, anchor="w")
+        self.usb_path_label.pack(anchor="w")
 
         delete_button_frame = Frame(usb_details_frame)
         delete_button_frame.grid(row=1, column=0, sticky="ew", pady=5)
 
-        Button(delete_button_frame, text="Delete from USB", bootstyle="outline-danger", command=self.delete_game_from_usb).pack()
+        Button(
+            delete_button_frame,
+            text="Delete from USB",
+            bootstyle="outline-danger",
+            command=self.delete_game_from_usb
+        ).pack()
 
         bottom_frame = Frame(self.root, padding=5)
         bottom_frame.grid(row=2, column=0, sticky="nsew")
@@ -145,7 +260,30 @@ class RVLoaderApp:
         self.progress = Progressbar(bottom_frame, orient="horizontal", mode="determinate")
         self.progress.pack(fill="x", padx=5, side="left", expand=True)
 
-        Button(bottom_frame, text="Save Configuration", bootstyle="outline-info", command=self.save_config).pack(side="right", padx=5)
+        Button(
+            bottom_frame,
+            text="Save Configuration",
+            bootstyle="outline-info",
+            command=self.save_config
+        ).pack(side="right", padx=5)
+
+    def _set_label_text(self, label, prefix, text, max_chars=40):
+        """
+        Assigns text to the label with a maximum character limit.
+        If exceeded, it truncates and adds '...'.
+        Then we apply a tooltip with the full text.
+        """
+        full_text = text
+        if len(text) > max_chars:
+            text = text[:max_chars - 3] + "..."
+        label.config(text=f"{prefix}: {text}")
+        self._set_label_tooltip(label, f"{prefix}: {full_text}")
+
+    def _set_label_tooltip(self, label, tooltip_text):
+        """
+        Creates or updates a tooltip for the given label.
+        """
+        ToolTip(label, tooltip_text)
 
     def add_folder(self, console_type):
         """
@@ -192,10 +330,12 @@ class RVLoaderApp:
         if not self.usb_drive:
             messagebox.showerror("Error", "Select a USB drive.")
             return
+
         selected_items = self.local_games_tree.selection()
         if not selected_items:
             messagebox.showerror("Error", "Select one or more games to copy.")
             return
+
         usb_path = self.usb_drive
         selected_games = [self.local_games[int(item)] for item in selected_items]
         self.progress["maximum"] = len(selected_games)
@@ -237,30 +377,39 @@ class RVLoaderApp:
         if not self.usb_drive:
             messagebox.showerror("Error", "Select a USB drive.")
             return
+
         selected_items = self.usb_games_tree.selection()
         if not selected_items:
             messagebox.showerror("Error", "Select one or more games to delete.")
             return
+
         confirm = messagebox.askyesno("Confirm Deletion", "Do you want to permanently delete the selected games?")
         if not confirm:
             return
+
         results = []
         for item in selected_items:
             game = self.usb_games[int(item)]
             res = USBUtils.delete_game_from_usb(game, self.usb_drive)
             results.append(res)
+
         self.load_usb_games(None)
         messagebox.showinfo("Deletion Results", "\n".join(results))
 
     def display_local_details(self, event):
         """
-        Displays details for the selected local game.
+        Displays details for the selected local game with structured fields
+        (labels with fixed width and truncation, plus tooltip).
         """
         selected_item = self.local_games_tree.selection()
         if not selected_item:
             return
         index = int(selected_item[0])
         game = self.local_games[index]
+
+        region = GameFinder.get_region(game["path"])
+        version = GameFinder.get_version(game["path"])
+
         cover_path = self.cover_manager.download_cover(game["id"])
         if cover_path:
             cover_image = self.cover_manager.load_cover_image(cover_path)
@@ -268,23 +417,28 @@ class RVLoaderApp:
             self.local_cover_canvas.image = cover_image
         else:
             self.local_cover_canvas.delete("all")
-        self.local_details_text.config(state="normal")
-        self.local_details_text.delete("1.0", "end")
-        self.local_details_text.insert("end", f"Name: {game['name']}\n")
-        self.local_details_text.insert("end", f"ID: {game['id']}\n")
-        self.local_details_text.insert("end", f"Type: {game['type']}\n")
-        self.local_details_text.insert("end", f"Path: {game['path']}\n")
-        self.local_details_text.config(state="disabled")
+
+        self._set_label_text(self.local_name_label,   "Name",    game["name"],  40)
+        self._set_label_text(self.local_id_label,     "ID",      game["id"],    40)
+        self._set_label_text(self.local_type_label,   "Type",    game["type"],  40)
+        self._set_label_text(self.local_region_label, "Region",  region,        40)
+        self._set_label_text(self.local_version_label,"Version", str(version),  40)
+        self._set_label_text(self.local_path_label,   "Path",    game["path"],  40)
 
     def display_usb_details(self, event):
         """
-        Displays details for the selected USB game.
+        Displays details for the selected USB game with structured fields
+        (labels with fixed width and truncation, plus tooltip).
         """
         selected_item = self.usb_games_tree.selection()
         if not selected_item:
             return
         index = int(selected_item[0])
         game = self.usb_games[index]
+
+        region = GameFinder.get_region(game["path"])
+        version = GameFinder.get_version(game["path"])
+
         cover_path = self.cover_manager.download_cover(game["id"])
         if cover_path:
             cover_image = self.cover_manager.load_cover_image(cover_path)
@@ -292,10 +446,10 @@ class RVLoaderApp:
             self.usb_cover_canvas.image = cover_image
         else:
             self.usb_cover_canvas.delete("all")
-        self.usb_details_text.config(state="normal")
-        self.usb_details_text.delete("1.0", "end")
-        self.usb_details_text.insert("end", f"Name: {game['name']}\n")
-        self.usb_details_text.insert("end", f"ID: {game['id']}\n")
-        self.usb_details_text.insert("end", f"Type: {game['type']}\n")
-        self.usb_details_text.insert("end", f"Path: {game['path']}\n")
-        self.usb_details_text.config(state="disabled")
+
+        self._set_label_text(self.usb_name_label,   "Name",   game["name"],   40)
+        self._set_label_text(self.usb_id_label,     "ID",     game["id"],     40)
+        self._set_label_text(self.usb_type_label,   "Type",   game["type"],   40)
+        self._set_label_text(self.usb_region_label, "Region", region,         40)
+        self._set_label_text(self.usb_version_label,"Version",str(version),   40)
+        self._set_label_text(self.usb_path_label,   "Path",   game["path"],   40)
