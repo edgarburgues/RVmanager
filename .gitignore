@@ -171,7 +171,7 @@ cython_debug/
 .pypirc
 
 # project specific files and folders
-assets/
+assets/covers
 game_paths.json
 prompt-creator.py
 out.txt
