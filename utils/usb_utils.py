@@ -5,7 +5,7 @@ class USBUtils:
     @staticmethod
     def get_available_drives():
         """
-        Retorna las unidades disponibles (Windows o Linux).
+        Returns available drives (Windows or Linux).
         """
         if os.name == 'nt':
             return [os.path.normpath(f"{chr(d)}:/") for d in range(65, 91) if os.path.exists(f"{chr(d)}:/")]
@@ -15,7 +15,7 @@ class USBUtils:
     @staticmethod
     def copy_game_to_usb(game, usb_path):
         """
-        Copia un juego (ISO/WBFS) a la estructura adecuada en la unidad USB.
+        Copies a game (ISO/WBFS) to the appropriate structure on the USB drive.
         """
         try:
             console_type = game["type"]
@@ -24,10 +24,10 @@ class USBUtils:
             elif console_type == "Gamecube":
                 destination_folder = os.path.join(usb_path, "games", game["id"])
             else:
-                return f"Error: Tipo desconocido para el juego {game['name']}"
+                return f"Error: Unknown type for the game {game['name']}"
 
             os.makedirs(destination_folder, exist_ok=True)
             shutil.copy2(game["path"], os.path.join(destination_folder, "game.iso"))
-            return f"{game['name']}: Copiado con éxito"
+            return f"{game['name']}: Successfully copied"
         except Exception as e:
-            return f"Error copiando {game['name']}: {e}"
+            return f"Error copying {game['name']}: {e}"

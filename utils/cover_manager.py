@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 
 class CoverManager:
     """
-    Administra las portadas de los juegos (descarga y carga de imágenes).
+    Manages game cover images (downloading and loading).
     """
     def __init__(self, covers_folder="assets/covers"):
         self.covers_folder = os.path.normpath(covers_folder)
@@ -12,8 +12,8 @@ class CoverManager:
 
     def download_cover(self, title_id, regions=None):
         """
-        Descarga la portada del juego según el ID y región.
-        Devuelve la ruta local de la portada o None si no la encontró.
+        Downloads the cover image for a given title ID and region.
+        Returns the local path of the cover or None if not found.
         """
         if not regions:
             regions = ["US", "EN", "EU", "JP"]
@@ -37,11 +37,10 @@ class CoverManager:
 
     def load_cover_image(self, cover_path):
         """
-        Carga la imagen de portada y la redimensiona a 160x224, 
-        retornando un objeto ImageTk.PhotoImage.
+        Loads the cover image and resizes it to 160x224,
+        returning an ImageTk.PhotoImage object.
         """
         if os.path.exists(cover_path):
-            # Para versiones modernas de Pillow, se usa Image.Resampling.LANCZOS
             img = Image.open(cover_path).resize((160, 224), Image.Resampling.LANCZOS)
             return ImageTk.PhotoImage(img)
         return None

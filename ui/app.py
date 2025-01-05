@@ -23,36 +23,36 @@ class RVLoaderApp:
         self.setup_ui()
 
     def setup_ui(self):
-        # ----- Menú de acciones -----
+        # ----- Action Menu -----
         menu_frame = Frame(self.root, padding=10, bootstyle="primary")
         menu_frame.pack(fill="x")
 
         Button(
             menu_frame,
-            text="Añadir Carpeta (Gamecube)",
+            text="Add Folder (Gamecube)",
             bootstyle="outline-primary",
             command=lambda: self.add_folder("Gamecube")
         ).pack(side="left", padx=5)
 
         Button(
             menu_frame,
-            text="Añadir Carpeta (Wii)",
+            text="Add Folder (Wii)",
             bootstyle="outline-primary",
             command=lambda: self.add_folder("Wii")
         ).pack(side="left", padx=5)
 
         Button(
             menu_frame,
-            text="Actualizar Listas",
+            text="Refresh Lists",
             bootstyle="outline-success",
             command=self.refresh_game_list
         ).pack(side="left", padx=5)
 
-        # ----- Selección de unidad USB -----
+        # ----- USB Drive Selection -----
         usb_frame = Frame(self.root, padding=10)
         usb_frame.pack(fill="x")
 
-        Label(usb_frame, text="Unidad USB:").pack(side="left", padx=5)
+        Label(usb_frame, text="USB Drive:").pack(side="left", padx=5)
         self.usb_drive_selector = Combobox(
             usb_frame,
             values=USBUtils.get_available_drives(),
@@ -62,11 +62,11 @@ class RVLoaderApp:
         self.usb_drive_selector.pack(side="left", padx=5)
         self.usb_drive_selector.bind("<<ComboboxSelected>>", self.load_usb_games)
 
-        # ----- Marco principal con 4 columnas -----
+        # ----- Main Frame with 4 columns -----
         main_frame = Frame(self.root, padding=10)
         main_frame.pack(fill="both", expand=True)
 
-        # Columna 1: Detalles del juego local seleccionado
+        # Column 1: Local game details
         local_details_frame = Frame(main_frame, padding=10)
         local_details_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
 
@@ -76,11 +76,11 @@ class RVLoaderApp:
         self.local_details_text = Text(local_details_frame, width=30, height=10, state="disabled", wrap="word")
         self.local_details_text.pack(pady=5)
 
-        # Columna 2: Lista de juegos locales
+        # Column 2: Local games list
         local_list_frame = Frame(main_frame, padding=10)
         local_list_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
 
-        Label(local_list_frame, text="Juegos Locales", bootstyle="primary").pack(pady=5)
+        Label(local_list_frame, text="Local Games", bootstyle="primary").pack(pady=5)
 
         self.local_games_tree = Treeview(
             local_list_frame,
@@ -89,8 +89,8 @@ class RVLoaderApp:
             height=20
         )
         self.local_games_tree.heading("ID", text="ID")
-        self.local_games_tree.heading("Name", text="Nombre")
-        self.local_games_tree.heading("Type", text="Tipo")
+        self.local_games_tree.heading("Name", text="Name")
+        self.local_games_tree.heading("Type", text="Type")
 
         self.local_games_tree.column("ID", width=80, anchor="center")
         self.local_games_tree.column("Name", width=300, anchor="w", stretch=True)
@@ -99,11 +99,11 @@ class RVLoaderApp:
         self.local_games_tree.pack(fill="both", expand=True)
         self.local_games_tree.bind("<<TreeviewSelect>>", self.display_local_details)
 
-        # Columna 3: Lista de juegos en USB
+        # Column 3: USB games list
         usb_list_frame = Frame(main_frame, padding=10)
         usb_list_frame.grid(row=0, column=2, sticky="nsew", padx=10, pady=10)
 
-        Label(usb_list_frame, text="Juegos en USB", bootstyle="primary").pack(pady=5)
+        Label(usb_list_frame, text="USB Games", bootstyle="primary").pack(pady=5)
 
         self.usb_games_tree = Treeview(
             usb_list_frame,
@@ -112,8 +112,8 @@ class RVLoaderApp:
             height=20
         )
         self.usb_games_tree.heading("ID", text="ID")
-        self.usb_games_tree.heading("Name", text="Nombre")
-        self.usb_games_tree.heading("Type", text="Tipo")
+        self.usb_games_tree.heading("Name", text="Name")
+        self.usb_games_tree.heading("Type", text="Type")
 
         self.usb_games_tree.column("ID", width=80, anchor="center")
         self.usb_games_tree.column("Name", width=300, anchor="w", stretch=True)
@@ -122,7 +122,7 @@ class RVLoaderApp:
         self.usb_games_tree.pack(fill="both", expand=True)
         self.usb_games_tree.bind("<<TreeviewSelect>>", self.display_usb_details)
 
-        # Columna 4: Detalles del juego en USB seleccionado
+        # Column 4: USB game details
         usb_details_frame = Frame(main_frame, padding=10)
         usb_details_frame.grid(row=0, column=3, sticky="nsew", padx=10, pady=10)
 
@@ -132,43 +132,43 @@ class RVLoaderApp:
         self.usb_details_text = Text(usb_details_frame, width=30, height=10, state="disabled", wrap="word")
         self.usb_details_text.pack(pady=5)
 
-        # Ajuste de las proporciones de las columnas
+        # Adjust column proportions
         main_frame.columnconfigure(0, weight=1)
         main_frame.columnconfigure(1, weight=2)
         main_frame.columnconfigure(2, weight=2)
         main_frame.columnconfigure(3, weight=1)
 
-        # ----- Barra de progreso -----
+        # ----- Progress Bar -----
         progress_frame = Frame(self.root, padding=10)
         progress_frame.pack(fill="x")
 
         self.progress = Progressbar(progress_frame, orient="horizontal", mode="determinate")
         self.progress.pack(fill="x", pady=10)
 
-        # ----- Botones de acción -----
+        # ----- Action Buttons -----
         actions_frame = Frame(self.root, padding=10)
         actions_frame.pack(fill="x")
 
         Button(
             actions_frame,
-            text="Copiar Juegos al USB",
+            text="Copy Games to USB",
             bootstyle="outline-danger",
             command=self.copy_games_to_usb
         ).pack(side="left", padx=5)
 
         Button(
             actions_frame,
-            text="Guardar Configuración",
+            text="Save Configuration",
             bootstyle="outline-info",
             command=self.save_config
         ).pack(side="left", padx=5)
 
-        # ----- Carga inicial de la lista de juegos -----
+        # ----- Initial load of the local games list -----
         self.refresh_game_list()
 
     def add_folder(self, console_type):
         """
-        Agrega una carpeta al archivo de configuración (Wii o Gamecube).
+        Adds a folder to the configuration file (Wii or Gamecube).
         """
         folder = filedialog.askdirectory()
         if folder:
@@ -177,7 +177,7 @@ class RVLoaderApp:
 
     def refresh_game_list(self):
         """
-        Refresca la lista de juegos locales leyendo las carpetas configuradas.
+        Refreshes the list of local games by reading the configured folders.
         """
         self.local_games_tree.delete(*self.local_games_tree.get_children())
         self.local_games = GameFinder.find_games(self.config_manager.get_game_folders())
@@ -186,7 +186,7 @@ class RVLoaderApp:
 
     def load_usb_games(self, event):
         """
-        Carga la lista de juegos detectados en la unidad USB seleccionada.
+        Loads the list of games detected on the selected USB drive.
         """
         self.usb_games_tree.delete(*self.usb_games_tree.get_children())
         self.usb_drive = self.usb_drive_selector.get()
@@ -199,22 +199,22 @@ class RVLoaderApp:
 
     def save_config(self):
         """
-        Guarda la configuración (carpetas de juegos) en el archivo JSON.
+        Saves the configuration (game folders) to the JSON file.
         """
         self.config_manager.save_config()
-        messagebox.showinfo("Éxito", "Configuración guardada correctamente.")
+        messagebox.showinfo("Success", "Configuration saved successfully.")
 
     def copy_games_to_usb(self):
         """
-        Copia los juegos seleccionados en la lista local hacia la unidad USB elegida.
+        Copies the selected local games to the chosen USB drive.
         """
         if not self.usb_drive:
-            messagebox.showerror("Error", "Seleccione una unidad USB.")
+            messagebox.showerror("Error", "Select a USB drive.")
             return
 
         selected_items = self.local_games_tree.selection()
         if not selected_items:
-            messagebox.showerror("Error", "Seleccione uno o más juegos para copiar.")
+            messagebox.showerror("Error", "Select one or more games to copy.")
             return
 
         usb_path = self.usb_drive
@@ -230,12 +230,12 @@ class RVLoaderApp:
             self.root.update_idletasks()
 
         self.progress["value"] = 0
-        messagebox.showinfo("Resultados de la copia", "\n".join(results))
-        self.load_usb_games(None)  # Refresca la lista de juegos en la unidad USB
+        messagebox.showinfo("Copy Results", "\n".join(results))
+        self.load_usb_games(None)  # Refresh the game list on the USB drive
 
     def display_local_details(self, event):
         """
-        Muestra detalles y portada del juego local seleccionado.
+        Displays details and cover image of the selected local game.
         """
         self.display_details(
             tree=self.local_games_tree,
@@ -246,7 +246,7 @@ class RVLoaderApp:
 
     def display_usb_details(self, event):
         """
-        Muestra detalles y portada del juego en USB seleccionado.
+        Displays details and cover image of the selected USB game.
         """
         self.display_details(
             tree=self.usb_games_tree,
@@ -257,7 +257,7 @@ class RVLoaderApp:
 
     def display_details(self, tree, canvas, details_text, games):
         """
-        Función genérica para mostrar los detalles de cualquier juego (local o USB).
+        Generic function to display details of any game (local or USB).
         """
         selected_item = tree.selection()
         if not selected_item:
@@ -267,7 +267,7 @@ class RVLoaderApp:
         item_index = tree.index(item_id)
         game = games[item_index]
 
-        # Descargar y mostrar la portada
+        # Download and show the cover image
         cover_path = self.cover_manager.download_cover(game["id"])
         if cover_path:
             cover_image = self.cover_manager.load_cover_image(cover_path)
@@ -276,11 +276,11 @@ class RVLoaderApp:
         else:
             canvas.delete("all")
 
-        # Mostrar texto con la info del juego
+        # Show the game info
         details_text.config(state="normal")
         details_text.delete(1.0, "end")
-        details_text.insert("end", f"Nombre: {game['name']}\n")
+        details_text.insert("end", f"Name: {game['name']}\n")
         details_text.insert("end", f"ID: {game['id']}\n")
-        details_text.insert("end", f"Tipo: {game['type']}\n")
-        details_text.insert("end", f"Ruta: {game['path']}\n")
+        details_text.insert("end", f"Type: {game['type']}\n")
+        details_text.insert("end", f"Path: {game['path']}\n")
         details_text.config(state="disabled")

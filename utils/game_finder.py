@@ -4,8 +4,8 @@ class GameFinder:
     @staticmethod
     def find_games(folders, extensions=('.iso', '.wbfs')):
         """
-        Busca juegos en formato .iso o .wbfs en las carpetas especificadas.
-        Retorna una lista de diccionarios con la info de cada juego.
+        Searches for games in .iso or .wbfs format within the specified folders.
+        Returns a list of dictionaries with each game's information.
         """
         games = []
         for folder in folders:
@@ -21,7 +21,7 @@ class GameFinder:
     @staticmethod
     def extract_game_info(game_path, console_type):
         """
-        Extrae el ID y el nombre de un juego a partir del archivo ISO/WBFS.
+        Extracts the ID and name of a game from the ISO/WBFS file.
         """
         title_id = GameFinder.get_title_id(game_path)
         game_name = GameFinder.get_game_name(game_path)
@@ -30,7 +30,7 @@ class GameFinder:
     @staticmethod
     def get_title_id(game_path):
         """
-        Lee los primeros 6 bytes (offset distinto según .iso o .wbfs) para obtener el ID.
+        Reads the first 6 bytes (different offset for .iso or .wbfs) to get the ID.
         """
         with open(game_path, 'rb') as f:
             offset = 0x0 if game_path.endswith('.iso') else 0x200
@@ -40,7 +40,7 @@ class GameFinder:
     @staticmethod
     def get_game_name(game_path):
         """
-        Lee 64 bytes (offset distinto según .iso o .wbfs) para obtener el nombre.
+        Reads 64 bytes (different offset for .iso or .wbfs) to get the name.
         """
         with open(game_path, 'rb') as f:
             offset = 0x20 if game_path.endswith('.iso') else 0x220
@@ -50,8 +50,8 @@ class GameFinder:
     @staticmethod
     def get_console_type(folders, root, file):
         """
-        Determina si un archivo .wbfs es Wii, 
-        o se basa en la carpeta en la que se encuentra para inferir si es Wii o Gamecube.
+        Determines if a .wbfs file is Wii, or uses the folder path
+        to infer whether it's Wii or Gamecube.
         """
         if file.endswith('.wbfs'):
             return "Wii"

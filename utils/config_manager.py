@@ -3,7 +3,7 @@ import os
 
 class ConfigManager:
     """
-    Se encarga de leer y escribir el archivo de configuración (por defecto: game_paths.json).
+    Handles reading and writing the configuration file (defaults to game_paths.json).
     """
     def __init__(self, config_file="game_paths.json"):
         self.config_file = os.path.normpath(config_file)
@@ -12,7 +12,7 @@ class ConfigManager:
 
     def load_config(self):
         """
-        Carga la configuración desde el archivo JSON si existe.
+        Loads the configuration from the JSON file if it exists.
         """
         if os.path.exists(self.config_file):
             with open(self.config_file, 'r') as f:
@@ -20,14 +20,14 @@ class ConfigManager:
 
     def save_config(self):
         """
-        Guarda la configuración en el archivo JSON.
+        Saves the configuration to the JSON file.
         """
         with open(self.config_file, 'w') as f:
             json.dump(self.data, f, indent=4)
 
     def get_game_folders(self):
         """
-        Retorna la lista de carpetas de juegos, normalizando las rutas.
+        Returns the list of game folders, normalizing the paths.
         """
         return [
             {"path": os.path.normpath(folder["path"]), "type": folder["type"]}
@@ -36,7 +36,7 @@ class ConfigManager:
 
     def add_game_folder(self, folder, console_type):
         """
-        Agrega una carpeta de juegos con su tipo (Wii o Gamecube) si no existe ya.
+        Adds a game folder with its console type (Wii or Gamecube) if it doesn't already exist.
         """
         normalized_folder = os.path.normpath(folder)
         if not any(f["path"] == normalized_folder for f in self.data["game_folders"]):
