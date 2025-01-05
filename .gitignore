@@ -173,3 +173,5 @@ cython_debug/
 # project specific files and folders
 assets/
 game_paths.json
+prompt-creator.py
+out.txt
