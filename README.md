@@ -143,8 +143,7 @@ These issues are planned to be addressed in upcoming updates alongside other fea
 
 ## License
 
-This project is open-source and available under the MIT License.
-You are free to use, modify, and distribute this software as long as the license terms are respected.
+This project is licensed under the GNU General Public License v3.0. You can read the full license [here](LICENSE).
 
 ### Disclaimer:
 
