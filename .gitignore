@@ -169,3 +169,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# project specific files and folders
+assets/
+game_paths.json
