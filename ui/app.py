@@ -343,17 +343,49 @@ class RVLoaderApp:
         thread = threading.Thread(target=self._copy_games_in_background, args=(selected_games, usb_path))
         thread.start()
 
+    def _show_copy_dialog(self, title, message):
+            """
+            Creates and shows a modal dialog for showing progress.
+            """
+            dialog = Toplevel(self.root)
+            dialog.title(title)
+            dialog.geometry("400x150")
+            dialog.resizable(False, False)
+            dialog.grab_set()
+
+            Label(dialog, text=message, anchor="center").pack(pady=10)
+            progress_bar = Progressbar(dialog, mode="indeterminate")
+            progress_bar.pack(fill="x", padx=20, pady=20)
+            progress_bar.start()
+
+            return dialog
+
     def _copy_games_in_background(self, selected_games, usb_path):
         """
         Copies games in a separate thread to avoid UI freeze.
         """
+        copy_dialog = self._show_copy_dialog("Copying Games", "Initializing copy process...")
+
         results = []
         total = len(selected_games)
-        for i, game in enumerate(selected_games):
-            result = USBUtils.copy_game_to_usb(game, usb_path, self.cover_manager)
-            results.append(result)
-            self.root.after(0, lambda current=i+1: self._update_copy_progress(current, total))
-        self.root.after(0, lambda: self._show_copy_results(results))
+
+        def update_copy_status(index, game):
+            if index < total:
+                copy_dialog.children["!label"].config(
+                    text=f"Copying '{game['name']}' (ID: {game['id']}) to USB..."
+                )
+            else:
+                copy_dialog.destroy()
+
+        def perform_copy():
+            for i, game in enumerate(selected_games):
+                result = USBUtils.copy_game_to_usb(game, usb_path, self.cover_manager)
+                results.append(result)
+                self.root.after(0, lambda idx=i, g=game: update_copy_status(idx + 1, g))
+            self.root.after(0, lambda: self._show_copy_results(results))
+
+        thread = threading.Thread(target=perform_copy)
+        thread.start()
 
 
     def _update_copy_progress(self, current, total):

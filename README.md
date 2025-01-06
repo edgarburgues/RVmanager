@@ -60,6 +60,7 @@ RVmanager is a Python-based application designed to simplify the transfer and ma
    ```
 
 4. Run the application:
+
    ```bash
    python main.py
    ```
@@ -114,6 +115,7 @@ Clicking `Save Configuration` writes the updated configuration to the JSON file.
   ```
 
 - Gamecube games (`ISO`) are copied to:
+
   ```
   <USB root>/
    └── games/
@@ -127,10 +129,10 @@ This folder structure makes your games recognizable by RVloader.
 
 ### Known Bugs
 
-- **Cover Path Issue:** Currently, cover images are not being copied to the correct folder (`rvloader/covers/`), which means covers may not appear in RVloader.
+- ~~**Cover Path Issue:** Currently, cover images are not being copied to the correct folder (`rvloader/covers/`), which means covers may not appear in RVloader.~~
 - **Game Region Detection:** The region of games is always displayed as "unknown" due to incomplete metadata parsing.
 - **Multidisc Handling:** Multidisc game support is partially implemented but not yet functional, requiring further development to handle these cases correctly.
-- **Feedback on Transfers:** When copying a game from the PC to the USB drive, no progress feedback is shown during the process. However, upon completion, the application does indicate whether the transfer was successful or not.
+- ~~**Feedback on Transfers:** When copying a game from the PC to the USB drive, no progress feedback is shown during the process. However, upon completion, the application does indicate whether the transfer was successful or not.~~
 
 ### Future Updates
 
