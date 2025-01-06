@@ -3,12 +3,12 @@ import shutil
 
 class USBUtils:
     """
-    Provides USB drive detection and operations for copying or deleting games.
+    Provides methods to interact with USB drives, including copy and delete.
     """
     @staticmethod
     def get_available_drives():
         """
-        Returns a list of available drives in the system.
+        Returns all available drives on the system.
         """
         if os.name == "nt":
             return [os.path.normpath(f"{chr(d)}:/") for d in range(65, 91) if os.path.exists(f"{chr(d)}:/")]
@@ -18,7 +18,7 @@ class USBUtils:
     @staticmethod
     def copy_game_to_usb(game, usb_path, cover_manager):
         """
-        Copies a game to the USB drive in the appropriate folder structure and ensures the cover is also copied.
+        Copies a game file and its cover to the target USB folder.
         """
         try:
             console_type = game["type"]
@@ -29,11 +29,9 @@ class USBUtils:
             else:
                 return f"{game['name']}: Unknown console type"
 
-            # Copy game file
             os.makedirs(destination_folder, exist_ok=True)
             shutil.copy2(game["path"], os.path.join(destination_folder, "game.iso"))
 
-            # Handle cover
             covers_folder = os.path.join(usb_path, "rvloader", "covers")
             os.makedirs(covers_folder, exist_ok=True)
             cover_path = os.path.join(covers_folder, f"{game['id']}.png")
@@ -49,11 +47,10 @@ class USBUtils:
         except Exception as e:
             return f"{game['name']}: Copy error ({str(e)})"
 
-
     @staticmethod
     def delete_game_from_usb(game, usb_path):
         """
-        Deletes a game folder from the USB drive.
+        Removes the specified game folder from the USB drive.
         """
         try:
             console_type = game["type"]

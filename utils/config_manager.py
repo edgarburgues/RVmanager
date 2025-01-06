@@ -3,16 +3,19 @@ import os
 
 class ConfigManager:
     """
-    Handles reading and writing configuration data.
+    Reads, updates, and writes configuration data to a JSON file.
     """
     def __init__(self, config_file="game_paths.json"):
+        """
+        Initializes config data and loads from file if present.
+        """
         self.config_file = os.path.normpath(config_file)
         self.data = {"game_folders": []}
         self.load_config()
 
     def load_config(self):
         """
-        Loads the configuration file if it exists.
+        Loads JSON data from the config file if it exists.
         """
         if os.path.exists(self.config_file):
             with open(self.config_file, "r") as f:
@@ -20,14 +23,14 @@ class ConfigManager:
 
     def save_config(self):
         """
-        Saves the current configuration to file.
+        Saves the current configuration to the JSON file.
         """
         with open(self.config_file, "w") as f:
             json.dump(self.data, f, indent=4)
 
     def get_game_folders(self):
         """
-        Returns the game folders from the config file.
+        Returns the configured list of game folders.
         """
         return [
             {"path": os.path.normpath(folder["path"]), "type": folder["type"]}
@@ -36,7 +39,7 @@ class ConfigManager:
 
     def add_game_folder(self, folder, console_type):
         """
-        Adds a new folder of a certain console type if it does not exist yet.
+        Adds a new folder to the configuration if not already present.
         """
         normalized_folder = os.path.normpath(folder)
         if not any(f["path"] == normalized_folder for f in self.data["game_folders"]):

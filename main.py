@@ -4,9 +4,6 @@ from ttkbootstrap import Style
 from ui.app import RVLoaderApp
 
 def get_base_dir():
-    """
-    Returns the base directory depending on whether the script is frozen or not.
-    """
     if getattr(sys, "frozen", False):
         return os.path.dirname(sys.executable)
     else:
