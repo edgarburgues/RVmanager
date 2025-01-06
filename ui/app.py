@@ -350,10 +350,11 @@ class RVLoaderApp:
         results = []
         total = len(selected_games)
         for i, game in enumerate(selected_games):
-            result = USBUtils.copy_game_to_usb(game, usb_path)
+            result = USBUtils.copy_game_to_usb(game, usb_path, self.cover_manager)
             results.append(result)
             self.root.after(0, lambda current=i+1: self._update_copy_progress(current, total))
         self.root.after(0, lambda: self._show_copy_results(results))
+
 
     def _update_copy_progress(self, current, total):
         """
